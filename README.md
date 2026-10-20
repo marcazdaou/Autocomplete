@@ -1,66 +1,36 @@
-# Autocomplete System
+# Autocomplete
 
-A high-performance autocomplete engine in **Java** that processes **10,000+ query terms** with **O(log N)** prefix search using binary search and weight-based ranking.
+An autocomplete engine in Java: given a list of weighted terms (for example cities weighted by population),
+it returns every term that starts with a typed prefix, ranked by weight. Written for a data structures and
+algorithms course.
 
-## How It Works
+## How it works
 
 ```
-User types prefix "New"
-       ↓
-Binary search → locate first & last matching term in sorted array   O(log N)
-       ↓
-Extract matches → slice subarray of candidates
-       ↓
-Rank by weight descending → return top-k results                    O(k log k)
-       ↓
-"New York City (8,175,133)"  "Newark (277,140)"  "New Haven (129,779)"
+Load N (weight, term) pairs → sort lexicographically            O(N log N), once
+Prefix query:
+  binary search for the first and last term with that prefix    O(log N)
+  copy the m matches and sort them by descending weight         O(m log m)
+  print the top k
 ```
 
-## Features
+## Files (`Autocomplete/`)
 
-- Handles datasets with **10,000+ weighted terms**
-- **O(log N)** prefix lookup — scales to arbitrarily large datasets
-- **Weight-based ranking** — highest-weight results appear first
-- Custom `Comparator` classes for flexible sort ordering
-- Works with any weighted dataset (cities, words, web queries, products)
-
-## Complexity
-
-| Operation | Time Complexity |
+| File | Role |
 |---|---|
-| Load & sort terms | O(N log N) |
-| Prefix search | O(log N) |
-| Top-k ranking | O(k log k) |
-| Overall query | O(log N + k log k) |
+| `Term.java` | A (query, weight) pair with three orderings: lexicographic, by reverse weight, and by the first `r` characters (prefix order) |
+| `BinarySearchDeluxe.java` | Generic `firstIndexOf` / `lastIndexOf`: binary searches that return the first or last index of a key under any `Comparator` |
+| `Autocomplete.java` | `allMatches(prefix)` and `numberOfMatches(prefix)`; the `main` program loads a term file and answers prefixes typed on standard input |
 
-## Key Classes
+## Run
 
-| Class | Role |
-|---|---|
-| `Term.java` | Stores a (string, weight) pair; implements Comparators |
-| `BinarySearchDeluxe.java` | Binary search returning first/last index of a key |
-| `Autocomplete.java` | Orchestrates search + ranking |
-
-## Technologies
-
-- **Java**
-- Binary search (custom `firstIndexOf` / `lastIndexOf`)
-- `Comparator`-based term ranking
-
-## Build & Run
+Uses the course library (`stdlib`). The input file starts with the number of terms, then one `weight<TAB>term` per line.
 
 ```bash
 javac Term.java BinarySearchDeluxe.java Autocomplete.java
-
-# Run with a dataset and k (number of results)
-java Autocomplete cities.txt 5
+java Autocomplete cities.txt 5      # then type a prefix, e.g. "New", to see the top 5 matches by weight
 ```
 
-```
-Query: New
-→ New York City      8175133
-→ New Los Angeles    3971883
-→ Newark              277140
-→ New Haven           129779
-→ New Britain          71538
-```
+## Concepts
+
+Binary search · comparators and generics · sorting · prefix matching
